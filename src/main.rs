@@ -36,7 +36,6 @@ impl Card {
 
         used_cards.push(card_number);
         let card_vec = card_map.get(&card_number).unwrap();
-        println!("{:?}", card_vec);
 
         return Card { suit: card_vec[0], card_type: card_vec[1] };
     }
@@ -72,16 +71,38 @@ impl Card {
         }
 
         let card_string = format!("{} of {}", card, suit);
-        return card_string;
+        card_string
     }
 }
 
+#[derive(Debug)]
+struct Hand {
+    card_one: Card,
+    card_two: Card
+}
+
+impl Hand {
+    fn new(used_cards: &mut Vec<u8>) -> Self {
+        let first_card = Card::new(used_cards);
+        let second_card = Card::new(used_cards);
+
+        Hand { card_one: first_card, card_two: second_card }
+    }
+}
 
 fn main() {
-    let mut used_cards: Vec<u8> = Vec::new();
+    let number_of_players: u8 = 3;
 
-    let player = Card::new(&mut used_cards);
-    let player_string = Card::card_string(&player);
+    loop {
+        let mut used_cards: Vec<u8> = Vec::new();
+        let mut player_hands: Vec<Hand> = Vec::new();
 
-    println!("USED: {:?}", used_cards);
+        for i in 0..3 {
+            println!("{}", i);
+            player_hands.push(Hand::new(&mut used_cards));
+            println!("{}", Card::card_string(&player_hands[i].card_one))
+        }
+
+        break
+    }
 }
