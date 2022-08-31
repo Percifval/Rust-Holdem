@@ -38,6 +38,8 @@ impl Card {
         let card_vec = card_map.get(&card_number).unwrap();
         println!("{:?}", card_vec);
 
+        let _test = 0;
+
         return Card { suit: card_vec[0], card_type: card_vec[1] };
     }
 
