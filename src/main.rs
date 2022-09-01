@@ -30,7 +30,7 @@ impl Card {
         let mut card_number = rng.gen_range(1..53);
 
         while used_cards.contains(&card_number) {
-            println!("USED");
+            // println!("USED");
             card_number = rng.gen_range(1..53);
         }
 
@@ -77,12 +77,14 @@ impl Card {
 
 #[derive(Debug)]
 struct Hand {
+    // struct for a players pre-flop hand
     card_one: Card,
     card_two: Card
 }
 
 impl Hand {
     fn new(used_cards: &mut Vec<u8>) -> Self {
+        // Generates a player's preflop hand
         let first_card = Card::new(used_cards);
         let second_card = Card::new(used_cards);
 
@@ -90,19 +92,78 @@ impl Hand {
     }
 }
 
-fn main() {
-    let number_of_players: u8 = 3;
+enum GameResult {
+    RoyalFlush,
+    StraightFlush,
+    FourOfAKind,
+    FullHouse,
+    Flush,
+    Straight,
+    ThreeOfAKind,
+    TwoPair,
+    Pair,
+    HighCard
+}
 
-    loop {
-        let mut used_cards: Vec<u8> = Vec::new();
-        let mut player_hands: Vec<Hand> = Vec::new();
+impl GameResult {
+    fn get_game_result(hand: &Vec<Card>) {
+        let mut suits: Vec<u8> = Vec::new();
+        let mut cards: Vec<u8> = Vec::new();
 
-        for i in 0..3 {
-            println!("{}", i);
-            player_hands.push(Hand::new(&mut used_cards));
-            println!("{}", Card::card_string(&player_hands[i].card_one))
+        let mut royal_flush: bool = false;
+        let mut straight_flush: bool = false;
+        let mut four_of_a_kind: bool= false;
+        let mut full_house: bool = false;
+        let mut flush: bool = false;
+        let mut straight: bool = false;
+        let mut three_of_a_kind: bool = false;
+        let mut two_pair: bool = false;
+        let mut pair: bool = false;
+        let mut high_card: bool = false;
+
+        for i in 0..7 {
+            suits.push(hand[i].suit);
+            cards.push(hand[i].card_type);
         }
 
-        break
+        suits.sort();
+        cards.sort();
+
+        //Flush check
+        let mut heart: u8 = 0;
+        let mut diamond: u8 = 0;
+        let mut spades: u8 = 0;
+        let mut clubs: u8 = 0;
+        for i in suits.iter() {
+            match i {
+                1 => heart += 1,
+                2 => diamond += 1,
+                3 => spades += 1,
+                4 => clubs += 1,
+                _ => println!("ERROR")
+            };
+
+            if heart >= 5|| diamond >= 5 || spades >= 5 || clubs >= 5 {
+                flush = true;
+            }
+        }
+
+        println!("{:?}", suits);
+        println!("{:?}", cards);
+
     }
 }
+
+fn main() {
+    let mut used_cards: Vec<u8> = Vec::new();
+    let mut player: Vec<Card> = Vec::new();
+
+    for i in 0..8 {
+        player.push(Card::new(&mut used_cards));
+    }
+
+    GameResult::get_game_result(&player);
+}
+
+
+// Game loop
