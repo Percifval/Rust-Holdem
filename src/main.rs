@@ -132,6 +132,7 @@ enum GameResult {
 
 impl GameResult {
     fn get_game_result(hand: &Vec<Card>) {
+        println!("{:?}", hand);
         let mut suits: Vec<u8> = Vec::new();
         let mut cards: Vec<u8> = Vec::new();
 
@@ -140,28 +141,116 @@ impl GameResult {
             cards.push(hand[i].card_type);
         }
 
+        println!("UNSORTED SUITS: {:?}", suits);
+        println!("UNSORTED CARDS: {:?}", cards);
+
         // Cards must be sorted before passing to functions
         suits.sort();
         cards.sort();
 
-        if GameResult::check_straight(&cards) {
-            println!("STRAIGHT");
-        }
+        cards = vec![1, 1, 2, 4, 6, 8, 12];
 
-        if GameResult::check_flush(&suits) {
-            println!("FLUSH");
+        if GameResult::check_royal_flush(&mut cards.clone(), &mut suits.clone()) {
+            println!("ROYAL");
         }
 
         if GameResult::check_four_of_a_kind(&cards) {
             println!("FOUR OF A KIND");
         }
 
-        if GameResult::check_four_of_a_kind(&cards) {
+        if GameResult::check_full_house(&cards) {
+            println!("FULL HOUSE");
+        }
+
+        if GameResult::check_flush(&suits) {
+            println!("FLUSH");
+        }
+
+        if GameResult::check_straight(&cards) {
+            println!("STRAIGHT");
+        }
+
+        if GameResult::check_three_of_a_kind(&cards) {
             println!("THREE OF A KIND");
         }
 
-        println!("{:?}", suits);
-        println!("{:?}", cards);
+        if GameResult::check_two_pair(&cards) {
+            println!("Two pair");
+        }
+
+        if GameResult::check_pair(&cards) {
+            println!("PAIR");
+        }
+
+        // println!("{:?}", suits);
+        // println!("{:?}", cards);
+    }
+
+    fn check_royal_flush(cards: &mut Vec<u8>, suits: &mut Vec<u8>) -> bool {
+        for i in 0..6 {
+            if cards[i] > cards[i + 1] {
+                // Update so only 2 variables used
+                let mut tmp: u8 = 0;
+                tmp = cards[i];
+                cards[i] = cards[i+1];
+                cards[i+1] = tmp;
+
+                tmp = 0;
+                tmp = suits[i];
+                suits[i] = suits[i+1];
+                suits[i+1] = tmp;
+
+            }
+
+        }
+        false
+    }
+
+    fn check_straight_flush(cards: &Vec<Card>) -> bool {
+        false
+    }
+
+    fn check_four_of_a_kind(cards: &Vec<u8>) -> bool {
+        let mut same_consecutive = 1;
+        for i in 0..7 {
+            if i == 6 { break }
+            if cards[i] == cards[i+1] {
+                same_consecutive += 1;
+            } else {
+                same_consecutive = 1;
+            }
+
+            if same_consecutive >= 4 {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn check_full_house(cards: &Vec<u8>) -> bool {
+        let mut card_one: u8 = 1;
+        let mut card_two: u8 = 1;
+        for i in 0..7 {
+            if i == 6 { break }
+            if cards[i] == cards[i + 1] {
+                if card_one != 3 {
+                    card_one += 1;
+                } else {
+                    card_two += 1;
+                }
+
+                if card_one >= 3 {
+                    if card_two >= 2 {
+                        return true;
+                    }
+                } else if card_one >= 2 {
+                    if card_two >= 3 {
+                        return true;
+                    }
+                }
+            }
+        }
+        false
     }
 
     fn check_flush(suits: &Vec<u8>) -> bool {
@@ -216,23 +305,6 @@ impl GameResult {
         false
     }
 
-    fn check_four_of_a_kind(cards: &Vec<u8>) -> bool {
-        let mut same_consecutive = 1;
-        for i in 0..7 {
-            if i == 6 { break }
-            if cards[i] == cards[i+1] {
-                same_consecutive += 1;
-            } else {
-                same_consecutive = 1;
-            }
-
-            if same_consecutive >= 4 {
-                return true;
-            }
-        }
-        false
-    }
-
     fn check_three_of_a_kind(cards: &Vec<u8>) -> bool {
         let mut same_number: u8 = 1;
         for i in 0..7 {
@@ -244,6 +316,38 @@ impl GameResult {
             }
 
             if same_number >= 3 {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn check_two_pair(cards: &Vec<u8>) -> bool {
+        let mut pair_one: u8 = 1;
+        let mut pair_two: u8 = 1;
+        // let mut same_number: u8 = 1;
+        for i in 0..7 {
+            if i == 6 { break }
+            if cards[i] == cards[i + 1] {
+                if pair_one != 2 {
+                    pair_one += 1
+                } else {
+                    pair_two += 1
+                }
+            }
+
+            if pair_one >= 2 && pair_two >= 2 {
+                return true
+            }
+        }
+        false
+    }
+
+    fn check_pair(cards: &Vec<u8>) -> bool {
+        let pair = 1;
+        for i in 0..6 {
+            if i == 6 { break }
+            if cards[i] == cards[i + 1] {
                 return true;
             }
         }
