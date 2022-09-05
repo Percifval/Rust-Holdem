@@ -132,7 +132,7 @@ enum GameResult {
 
 impl GameResult {
     fn get_game_result(hand: &Vec<Card>) {
-        println!("{:?}", hand);
+        println!("{}", hand);
         let mut suits: Vec<u8> = Vec::new();
         let mut cards: Vec<u8> = Vec::new();
 
@@ -144,65 +144,37 @@ impl GameResult {
         println!("UNSORTED SUITS: {:?}", suits);
         println!("UNSORTED CARDS: {:?}", cards);
 
-        // Cards must be sorted before passing to functions
-        suits.sort();
-        cards.sort();
-
-        cards = vec![1, 1, 2, 4, 6, 8, 12];
-
-        if GameResult::check_royal_flush(&mut cards.clone(), &mut suits.clone()) {
-            println!("ROYAL");
+        // Cards must be sorted before passing to some functions
+        if GameResult::check_royal_flush(&mut cards, &mut suits) {
+            println!("ROYAL FLUSH");
         }
-
-        if GameResult::check_four_of_a_kind(&cards) {
-            println!("FOUR OF A KIND");
-        }
-
-        if GameResult::check_full_house(&cards) {
-            println!("FULL HOUSE");
-        }
-
-        if GameResult::check_flush(&suits) {
-            println!("FLUSH");
-        }
-
-        if GameResult::check_straight(&cards) {
-            println!("STRAIGHT");
-        }
-
-        if GameResult::check_three_of_a_kind(&cards) {
-            println!("THREE OF A KIND");
-        }
-
-        if GameResult::check_two_pair(&cards) {
-            println!("Two pair");
-        }
-
-        if GameResult::check_pair(&cards) {
-            println!("PAIR");
-        }
-
-        // println!("{:?}", suits);
-        // println!("{:?}", cards);
-    }
+   }
 
     fn check_royal_flush(cards: &mut Vec<u8>, suits: &mut Vec<u8>) -> bool {
-        for i in 0..6 {
-            if cards[i] > cards[i + 1] {
-                // Update so only 2 variables used
-                let mut tmp: u8 = 0;
-                tmp = cards[i];
-                cards[i] = cards[i+1];
-                cards[i+1] = tmp;
+        // Sorting the list but keeping the corresponding suit as the same index
+        for i in 0..cards.len(){
+            for j in 0..cards.len() - 1 - i {
+                if cards[j] > cards[j + 1] {
+                    cards.swap(j, j + 1);
+                    suits.swap(j, j+1);
+                }
+            }
+        }
 
-                tmp = 0;
-                tmp = suits[i];
-                suits[i] = suits[i+1];
-                suits[i+1] = tmp;
+        let mut suit_bool = false;
+        let mut card_bool = false;
 
+        if cards.contains(&10) && cards.contains(&11) &&
+            cards.contains(&12) && cards.contains(&13) && cards.contains(&1) {
+                card_bool = true;
             }
 
+        if (suits[0] == (suits[3] && suits[4] && suits[5] && suits[6]) {
+            suit_bool == true;
         }
+
+        println!("SORTED CARDS: {:?}", cards);
+        println!("SORTED SUITS: {:?}", suits);
         false
     }
 
