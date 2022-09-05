@@ -131,8 +131,7 @@ enum GameResult {
 }
 
 impl GameResult {
-    fn get_game_result(hand: &Vec<Card>) {
-        println!("{}", hand);
+    fn get_game_result(mut hand: Vec<Card>) {
         let mut suits: Vec<u8> = Vec::new();
         let mut cards: Vec<u8> = Vec::new();
 
@@ -141,42 +140,60 @@ impl GameResult {
             cards.push(hand[i].card_type);
         }
 
-        println!("UNSORTED SUITS: {:?}", suits);
-        println!("UNSORTED CARDS: {:?}", cards);
-
         // Cards must be sorted before passing to some functions
-        if GameResult::check_royal_flush(&mut cards, &mut suits) {
+        if GameResult::check_royal_flush(&mut hand) {
             println!("ROYAL FLUSH");
         }
    }
 
-    fn check_royal_flush(cards: &mut Vec<u8>, suits: &mut Vec<u8>) -> bool {
-        // Sorting the list but keeping the corresponding suit as the same index
-        for i in 0..cards.len(){
-            for j in 0..cards.len() - 1 - i {
-                if cards[j] > cards[j + 1] {
-                    cards.swap(j, j + 1);
-                    suits.swap(j, j+1);
+    fn check_royal_flush(hand: &mut Vec<Card>) -> bool {
+        println!("---UNSORTED---");
+        for i in 0..hand.len() {
+            println!("{:?}", hand[i]);
+        }
+
+        // Sort Vec<Card> by card_type while keeping the suit of the
+        // associated card
+        for i in 0..hand.len() {
+            for j in 0..hand.len() - 1 - i {
+                if hand[j].card_type > hand[j + 1].card_type {
+                    hand.swap(j, j+1);
                 }
             }
         }
 
-        let mut suit_bool = false;
-        let mut card_bool = false;
-
-        if cards.contains(&10) && cards.contains(&11) &&
-            cards.contains(&12) && cards.contains(&13) && cards.contains(&1) {
-                card_bool = true;
-            }
-
-        if (suits[0] == (suits[3] && suits[4] && suits[5] && suits[6]) {
-            suit_bool == true;
+        println!("---SORTED---");
+        for i in 0..hand.len() {
+            println!("{:?}", hand[i]);
         }
 
-        println!("SORTED CARDS: {:?}", cards);
-        println!("SORTED SUITS: {:?}", suits);
+        // Filter out lesser suit, lesser suit meaning suit which does not
+        // make up the majority of the hand
+        let mut hearts = 0;
+        let mut diamonds = 0;
+        let mut clubs = 0;
+        let mut spades = 0;
+        for i in 0..hand.len() {
+            match hand[i].suit {
+                1 => hearts += 1,
+                2 => diamonds += 1,
+                3 => clubs += 1,
+                4 => spades += 1,
+                _ => println!("error, not a vald suit")
+            };
+
+        let suits_hashmap = HashMap::from([
+            ("Heart", hearts),
+            ("Diamonds", diamonds),
+            ("Clubs", clubs),
+            ("Spades", spades)
+        ]);
+        }
+
         false
     }
+
+
 
     fn check_straight_flush(cards: &Vec<Card>) -> bool {
         false
@@ -335,6 +352,6 @@ fn main() {
         player.push(Card::new(&mut used_cards));
     }
 
-    GameResult::get_game_result(&player);
+    GameResult::get_game_result(player);
 }
 
