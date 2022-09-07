@@ -1,7 +1,7 @@
 use rand::prelude::*;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Card {
     suit: u8,      // 1 = Heart, 2 = Diamonds, 3 = Spades, 4 = Clubs
     card_type: u8, // 1 = Ace, 2 = 2, 3 = 3.. 11 = Jack, 12 = Queen, 13 = King
@@ -11,57 +11,23 @@ impl Card {
     fn new(used_cards: &mut Vec<u8>) -> Card {
         // Randomly generates a new card
         let card_map = HashMap::from([
-            (1, vec![1, 1]),
-            (2, vec![1, 2]),
-            (3, vec![1, 3]),
-            (4, vec![1, 4]),
-            (5, vec![1, 5]),
-            (6, vec![1, 6]),
-            (7, vec![1, 7]),
-            (8, vec![1, 8]),
-            (9, vec![1, 9]),
-            (10, vec![1, 10]),
-            (11, vec![1, 11]),
-            (12, vec![1, 12]),
-            (13, vec![1, 13]),
-            (14, vec![2, 1]),
-            (15, vec![2, 2]),
-            (16, vec![2, 3]),
-            (17, vec![2, 4]),
-            (18, vec![2, 5]),
-            (19, vec![2, 6]),
-            (20, vec![2, 7]),
-            (21, vec![2, 8]),
-            (22, vec![2, 9]),
-            (23, vec![2, 10]),
-            (24, vec![2, 11]),
-            (25, vec![2, 12]),
-            (26, vec![2, 13]),
-            (27, vec![3, 1]),
-            (28, vec![3, 2]),
-            (29, vec![3, 3]),
-            (30, vec![3, 4]),
-            (31, vec![3, 5]),
-            (32, vec![3, 6]),
-            (33, vec![3, 7]),
-            (34, vec![3, 8]),
-            (35, vec![3, 9]),
-            (36, vec![3, 10]),
-            (37, vec![3, 11]),
-            (38, vec![3, 12]),
-            (39, vec![3, 13]),
-            (40, vec![4, 1]),
-            (41, vec![4, 2]),
-            (42, vec![4, 3]),
-            (43, vec![4, 4]),
-            (44, vec![4, 5]),
-            (45, vec![4, 6]),
-            (46, vec![4, 7]),
-            (47, vec![4, 8]),
-            (48, vec![4, 9]),
-            (49, vec![4, 10]),
-            (50, vec![4, 11]),
-            (51, vec![4, 12]),
+            (1, vec![1, 1]),   (2, vec![1, 2]),   (3, vec![1, 3]),
+            (4, vec![1, 4]),   (5, vec![1, 5]),   (6, vec![1, 6]),
+            (7, vec![1, 7]),   (8, vec![1, 8]),   (9, vec![1, 9]),
+            (10, vec![1, 10]), (11, vec![1, 11]), (12, vec![1, 12]),
+            (13, vec![1, 13]), (14, vec![2, 1]),  (15, vec![2, 2]),
+            (16, vec![2, 3]),  (17, vec![2, 4]),  (18, vec![2, 5]),
+            (19, vec![2, 6]),  (20, vec![2, 7]),  (21, vec![2, 8]),
+            (22, vec![2, 9]),  (23, vec![2, 10]), (24, vec![2, 11]),
+            (25, vec![2, 12]), (26, vec![2, 13]), (27, vec![3, 1]),
+            (28, vec![3, 2]),  (29, vec![3, 3]),  (30, vec![3, 4]),
+            (31, vec![3, 5]),  (32, vec![3, 6]),  (33, vec![3, 7]),
+            (34, vec![3, 8]),  (35, vec![3, 9]),  (36, vec![3, 10]),
+            (37, vec![3, 11]), (38, vec![3, 12]), (39, vec![3, 13]),
+            (40, vec![4, 1]),  (41, vec![4, 2]),  (42, vec![4, 3]),
+            (43, vec![4, 4]),  (44, vec![4, 5]),  (45, vec![4, 6]),
+            (46, vec![4, 7]),  (47, vec![4, 8]),  (48, vec![4, 9]),
+            (49, vec![4, 10]), (50, vec![4, 11]), (51, vec![4, 12]),
             (52, vec![4, 13]),
         ]);
 
@@ -167,33 +133,54 @@ impl GameResult {
             println!("{:?}", hand[i]);
         }
 
-        // Filter out lesser suit, lesser suit meaning suit which does not
-        // make up the majority of the hand
-        let mut hearts = 0;
-        let mut diamonds = 0;
-        let mut clubs = 0;
-        let mut spades = 0;
+        // Removing the lesser suit, deals with edge case where royal flush
+        // is out but there are two ten's so the order would be 10 of Hearts,
+        // 10 of Spades, Jack of Hearts.. etc
+        let mut heart = 0;
+        let mut diamond = 0;
+        let mut club = 0;
+        let mut spade = 0;
         for i in 0..hand.len() {
             match hand[i].suit {
-                1 => hearts += 1,
-                2 => diamonds += 1,
-                3 => clubs += 1,
-                4 => spades += 1,
-                _ => println!("error, not a vald suit")
+                1 => heart += 1,
+                2 => diamond += 1,
+                3 => club += 1,
+                4 => spade += 1,
+                _ => panic!("Not a valid suit")
             };
-
-        let suits_hashmap = HashMap::from([
-            ("Heart", hearts),
-            ("Diamonds", diamonds),
-            ("Clubs", clubs),
-            ("Spades", spades)
-        ]);
         }
 
+        // Definitely a better way of doing this
+        let suit_vector = vec![heart, club, diamond, spade];
+        let mut index_to_remove: Vec<u8> = Vec::new();
+        let mut z: u8 = 0;
+        for i in 0..suit_vector.len() {
+            if suit_vector[i] >= 4 {
+                println!("{:?}", i);
+                for k in hand.iter() {
+                    if k.suit != (i + 1) as u8 {
+                        index_to_remove.push(z);
+                    }
+                    z += 1;
+                }
+                break;
+            }
+        }
+
+        // Index is changing as we rewove elements
+        println!("{:?}", index_to_remove);
+        for index in index_to_remove.iter() {
+            hand.remove((*index).into());
+        }
+
+
+
+        println!("---FILTERED---");
+        for i in 0..hand.len() {
+            println!("{:?}", hand[i]);
+        }
         false
     }
-
-
 
     fn check_straight_flush(cards: &Vec<Card>) -> bool {
         false
