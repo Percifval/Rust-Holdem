@@ -110,7 +110,7 @@ impl GameResult {
         if GameResult::check_royal_flush(&mut hand) {
             println!("ROYAL FLUSH");
         }
-   }
+    }
 
     fn check_royal_flush(hand: &mut Vec<Card>) -> bool {
         println!("---UNSORTED---");
@@ -150,7 +150,6 @@ impl GameResult {
             };
         }
 
-        // Definitely a better way of doing this
         let suit_vector = vec![heart, diamond, spade, club];
         println!("{:?}", suit_vector);
         for i in 0..suit_vector.len() {
@@ -164,7 +163,23 @@ impl GameResult {
         for i in 0..hand.len() {
             println!("{:?}", hand[i]);
         }
-        false
+
+        // Adding card_type back to vector
+        let mut card_vec: Vec<u8> = Vec::new();
+        for i in hand.iter() {
+            card_vec.push(i.card_type);
+        }
+
+        if card_vec.contains(&1)
+            && card_vec.contains(&10)
+            && card_vec.contains(&11)
+            && card_vec.contains(&12)
+            && card_vec.contains(&13) {
+                println!("TRUE");
+                return true;
+            } else {
+                return false
+            }
     }
 
     fn check_straight_flush(cards: &Vec<Card>) -> bool {
@@ -324,6 +339,16 @@ fn main() {
         player.push(Card::new(&mut used_cards));
     }
 
-    GameResult::get_game_result(player);
+    let royal_flush: Vec<Card> = vec![
+        Card { suit: 1, card_type: 1 },
+        Card { suit: 1, card_type: 10},
+        Card { suit: 2, card_type: 4 },
+        Card { suit: 1, card_type: 11},
+        Card { suit: 1, card_type: 12},
+        Card { suit: 4, card_type: 4 },
+        Card { suit: 2, card_type: 13},
+    ];
+
+    GameResult::get_game_result(royal_flush);
 }
 
