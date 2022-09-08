@@ -144,36 +144,21 @@ impl GameResult {
             match hand[i].suit {
                 1 => heart += 1,
                 2 => diamond += 1,
-                3 => club += 1,
-                4 => spade += 1,
+                3 => spade += 1,
+                4 => club += 1,
                 _ => panic!("Not a valid suit")
             };
         }
 
         // Definitely a better way of doing this
-        let suit_vector = vec![heart, club, diamond, spade];
-        let mut index_to_remove: Vec<u8> = Vec::new();
-        let mut z: u8 = 0;
+        let suit_vector = vec![heart, diamond, spade, club];
+        println!("{:?}", suit_vector);
         for i in 0..suit_vector.len() {
-            if suit_vector[i] >= 4 {
-                println!("{:?}", i);
-                for k in hand.iter() {
-                    if k.suit != (i + 1) as u8 {
-                        index_to_remove.push(z);
-                    }
-                    z += 1;
-                }
+            if suit_vector[i] >= 5 {
+                hand.retain(|x| x.suit == (i + 1) as u8);
                 break;
             }
         }
-
-        // Index is changing as we rewove elements
-        println!("{:?}", index_to_remove);
-        for index in index_to_remove.iter() {
-            hand.remove((*index).into());
-        }
-
-
 
         println!("---FILTERED---");
         for i in 0..hand.len() {
